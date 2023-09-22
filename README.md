@@ -1,6 +1,5 @@
 # Labor-Policy-Database
 
-## Introduction
 The aim of the labor policy database is to systematically organize and report on the existence of policies impacting labor conditions and requirements across US states and counties from 2013 to 2022. The policy areas tracked in this database include labor regulations (e.g., minimum wage and secure scheduling ordinances), public health and Covid-19 mandates (e.g., mask mandates), and civil rights related legislation (e.g., policies surrounding gender identity and undocumented status). 
 
 ## Policy Coding
