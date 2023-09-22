@@ -1,0 +1,150 @@
+---
+title: "NIOSH State Measures Codebook"
+author: 'PI: Daniel Schneider, Kristen Harknett'
+date: "2023-07-01"
+output:
+  html_document: default
+  tufte::tufte_handout:
+    latex_engine: xelatex
+  pdf_document: default
+  bookdown::pdf_document2:
+    latex_engine: lualatex
+---
+
+```{css, echo=FALSE, include=FALSE}
+<!-- <style type="text/css"> -->
+<!--   .table {width: 100%;} -->
+<!-- </style> -->
+
+<!-- div.container { -->
+<!--         width: 100%; -->
+<!--     } -->
+
+<!-- <div style = 'width:100%; height:auto; margin: auto;'> -->
+```
+
+```{r setup, include=FALSE}
+knit_by_pkgdown <- !is.null(knitr::opts_chunk$get("fig.retina"))
+knitr::opts_chunk$set(
+  warning = TRUE, # show warnings during codebook generation
+  message = TRUE, # show messages during codebook generation
+  error = TRUE, # do not interrupt codebook generation in case of errors,
+                # TRUE is usually better for debugging
+  echo = FALSE  # show R code
+)
+ggplot2::theme_set(ggplot2::theme_bw())
+# load library
+library(readr)
+library(tidyverse)
+library(codebook)
+library(xtable)
+library(DT)
+library(haven)
+library(kableExtra)
+```
+
+
+```{r prepare_codebook, warning = FALSE, message=FALSE, include=FALSE}
+# Read in the dataset
+vars.dta <- read_dta("~/Harvard University/HKS_Shift - data/area_data/area_data_RW/Complete/Combined/State_Measures.dta")
+
+vars.dta.codebook <- codebook_table(vars.dta)
+
+# Create some variable lists to be used below
+mask.mandate.vars <- c("mask_1_start", "mask_1_start_date", "mask_2_start", 
+                       "mask_2_start_date", "business_mask_start", "business_mask_start_date", 
+                       "vax_mask_end", "vax_mask_end_date", "vax_mask_res", "vax_mask_res_date",
+                       "mask_1_end", "mask_1_end_date", "mask_2_end", "mask_2_end_date",
+                       "local_mandates_banned", "local_mandates_banned_date", "mask_mandates_notes", 'any_mask_mandate')
+
+pfml.vars <- c('pfml_law', 'pfml_date_enacted', 'pfml_law_link', 'has_pfml_preemption_law')
+
+psl.vars <- c('psl_law', 'psl_date_enacted', 'psl_law_details', 'has_psl_preemption_law')
+
+sec.sched.vars <- c('secure_sched_law', 'secure_sched_prohib', 
+                    'secure_sched_law_date', 'secure_sched_law_link')
+
+stayathome.vars <- c('stayathome_start_date', 'stayathome_end_date', 
+                     'stayathome_law_notes', 'stayathome_law')
+
+transgender.vars <- c('gen_id_pub_antidisc', 'gen_id_pub_antidisc_date', 
+                      'gen_id_relig_exemp', 'gen_id_relig_exemp_date', 
+                      'ban_gen_id_antidisc', 'ban_gen_id_antidisc_date', 
+                      'dontsaygay', 'dontsaygay_date', 'bathroom_ban',
+                      'bathroom_ban_date')
+
+undocumented.vars <- c('est_pct_population', 'everify_req_pub', 'everify_req_pub_date',
+                       'everify_req_priv', 'everify_req_priv_date', 'sanct_status',
+                       'sanct_status_date', 'sanct_ban', 'sanct_ban_date', 'pro_lisc',
+                       'pro_lisc_date', 'ice_coop_req', 'ice_coop_req_date', 'ice_coop_lim',
+                       'ice_coop_lim_date', 'undoc_laws_descrip', 'undoc_laws_links')
+
+administrative <- c('state', 'state_abbreviation', 'state_fips_code', 'year', 'month')
+
+min.wage.vars <- c('minimum_wage', 'has_minwage_preemption_law')
+
+# create the final result that has a measure for each of the variables
+final.result <- vars.dta.codebook %>% 
+  mutate(Measure = case_when(name %in% c(mask.mandate.vars) ~ 'Mask Mandates', 
+                             name %in% c(min.wage.vars) ~ 'Minimum Wage', 
+                             name %in% c(pfml.vars) ~ 'Paid Family Medical Leave (PFML)', 
+                             name %in% c(psl.vars) ~ 'Paid Sick Leave (PSL)', 
+                             name %in% c(sec.sched.vars) ~ 'Secure Scheduling', 
+                             name %in% c(stayathome.vars) ~ 'Stay At Home', 
+                             name %in% c(transgender.vars) ~ 'Transgender Workers', 
+                             name %in% c(undocumented.vars) ~ 'Undocumented Workers',
+                             name %in% c(administrative) ~ 'Administrative')) %>% 
+  rename(`Variable Name` = name, 
+         `Variable Label` = label, 
+         `Value Labels` = value_labels) %>% 
+  select(Measure, `Variable Name`, `Variable Label`, `Value Labels`) 
+
+# Add a variable that will show the years covered by each measure
+# vars.dta %>%
+#   filter(everify_req_pub == 1) %>%
+#   summarize(min_year = min(year),
+#             max_year = max(year))
+
+#PFML - 2013-2022
+#Mask - 2020-2021
+#PSL - 2015-2022
+#secure scheduling - 2017-2022
+#min wage - 2016-2022
+#stay at home - 2020-2022
+#transgender - 2013-2022
+#undocumented - 2013-2022
+
+final.result <- final.result %>% 
+  mutate(`Years Covered` = case_when(Measure == 'Mask Mandates' ~ paste0(seq(2020, 2021, 1), collapse = ', '), 
+                                     Measure == 'Minimum Wage' ~ paste0(seq(2016, 2022, 1), collapse = ', '), 
+                                     Measure == 'Paid Family Medical Leave (PFML)' ~ paste0(seq(2013, 2022, 1), collapse = ', '), 
+                                     Measure == 'Paid Sick Leave (PSL)' ~ paste0(seq(2015, 2022, 1), collapse = ', '), 
+                                     Measure == 'Secure Scheduling' ~ paste0(seq(2017, 2022, 1), collapse = ', '), 
+                                     Measure == 'Stay At Home' ~ paste0(seq(2020, 2022, 1), collapse = ', '), 
+                                     Measure == 'Transgender Workers' ~ paste0(seq(2013, 2022, 1), collapse = ', '), 
+                                     Measure == 'Undocumented Workers' ~ paste0(seq(2013, 2022, 1), collapse = ', ')))
+
+# Save out the dta as rdata
+saveRDS(vars.dta, 'State_Measures.rds')
+```
+
+```{r datatable, results='asis'}
+# datatable provide nice, searcheable HTML document. 
+datatable(final.result, 
+          filter = 'top', 
+          rownames = F, 
+          extensions = c('FixedHeader', 
+                         'Buttons', 
+                         'Select', 
+                         'SearchPanes', 
+                         'ColReorder'), 
+          options = list(buttons = c('copy', 'csv', 'selectRows', 'selectAll'), 
+                         dom = 'PBlfrtip', 
+                         select = list(style = 'os', items = 'row'), 
+                         fixedHeader = T, 
+                         colReorder = T, 
+                         columnDefs = list(list(searchPanes = list(show=F), targets = 2:4)), 
+                         autoWidth = T), 
+          selection = 'none')
+```
+
