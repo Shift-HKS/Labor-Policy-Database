@@ -11,10 +11,10 @@ For each policy, we recorded our data source (state or county legal code, third 
 ## State vs Local Database
 Our state- and local-level trackers are uniquely identified by state and county FIPS (Federal Information Processing System) codes, respectively, as well as month-year. Researchers can, thus, merge this policy information to their data using the relevant FIPS code, but should pay careful attention to how they deal with time. Finally, although the local-level tracker has information about city-level policies, it is within the context of counties (e.g., the number of cities within a county that has a certain policy). This information cannot be directly merged to city-level data.
 
-## Suggested Citation
+### Suggested Citation
 Harknett KH, Schneider DS, Wolfe R, Williams C. (2023). "Shift Project State and Local Policy Database." Available at: github.com/Shift-HKS/Labor-Policy-Database
 
-## Funding Acknowledgement
+### Funding Acknowledgement
 The compilation of this database was supported by the National Institute for Occupational Safety and Health (Grant No. U19OH012293).
 
 
