@@ -13,8 +13,8 @@ Our state- and local-level trackers are uniquely identified by state and county 
 ## Suggested Citation
 Harknett KH, Schneider DS, Wolfe R, Williams C. (2023). "Shift Project State and Local Policy Database." Available at: github.com/Shift-HKS/Labor-Policy-Database
 
-### Primary Contact
-shiftproject@hks.harvard.edu
+## Primary Contact
+Please direct any questions or suggested modifications to shiftproject@hks.harvard.edu
 
 ## Funding Acknowledgement
 The compilation of this database was supported by the National Institute for Occupational Safety and Health (Grant No. U19OH012293).
